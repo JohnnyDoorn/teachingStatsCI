@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-confidenceIntervals <- function(jaspResults, dataset = NULL, options) {
+ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
 
   # anovaContainer <- .getAnovaContainer(jaspResults)
 

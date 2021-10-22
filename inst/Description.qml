@@ -17,7 +17,7 @@ Description
   {
   	title:	"Confidence Intervals"
   	qml:	"confidenceIntervals.qml"
-  	func: 	"confidenceIntervals"
+  	func: 	"ConfidenceIntervals"
 	requiresData:	false
 
   }
