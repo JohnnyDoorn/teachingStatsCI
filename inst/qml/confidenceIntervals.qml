@@ -28,35 +28,28 @@ Form
 
 	Group
 	{
-		DoubleField  { name: "tStatistic";	label: qsTr("t"); negativeValues: true	}
-		IntegerField { name: "n1Size";		label: qsTr("Group 1 size")				}
-		IntegerField { name: "n2Size";		label: qsTr("Group 2 size")				}
+		DoubleField  { name: "mu";	label: qsTr("μ"); negativeValues: true	}
+		DoubleField { name: "sigma";	label: qsTr("σ");	negativeValues: false;	max: 100;	defaultValue: 1	}
+		IntegerField { name: "n";	label: qsTr("n");	min: 2;	max: 10000; defaultValue: 10				}
+		CIField { name: "confidenceIntervalInterval"; label: qsTr("Confidence level") }
+		IntegerField { name: "nReps";	label: qsTr("Repetitions");	min: 1;	max: 10000;	defaultValue: 10				}
     }
 
     Divider { }
-
-	RadioButtonGroup
-	{
-		title: qsTr("Alt. Hypothesis")
-		name: "hypothesis"
-		RadioButton { value: "groupsNotEqual";	label: qsTr("Group 1 \u2260 Group 2"); checked: true	}
-		RadioButton { value: "groupOneGreater";	label: qsTr("Group 1 > Group 2")						}
-		RadioButton { value: "groupTwoGreater";	label: qsTr("Group 1 < Group 2")						}
-	}
 
 	Group
 	{
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";		
+			name: "treePlot";		label: qsTr("Tree plot"); checked: true
+			CheckBox { name: "treePlotAdditionalInfo";		
 			label: qsTr("Additional info"); checked: true }
 		}
 		CheckBox
 		{
-			name: "plotBayesFactorRobustness";	label: qsTr("Bayes factor robustness check")
-			CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo";	label: qsTr("Additional info"); checked: true }
+			name: "dataPlot";	label: qsTr("Data plots")
+			IntegerField { name: "dataPlotShowN";	label: qsTr("Show last");	min: 1;	max: 10;	defaultValue: 1				}
 		}
 	}
 
