@@ -43,8 +43,18 @@ Form
 		CheckBox
 		{
 			name: "treePlot";		label: qsTr("Tree plot"); checked: true
-			CheckBox { name: "treePlotAdditionalInfo";		
-			label: qsTr("Additional info"); checked: true }
+			CheckBox
+			{
+				name: "tableTreePlot"; label: qsTr("Display table"); checked: false
+			}
+			CheckBox 
+			{ 
+				name: "fixAxisTreePlot"; label: qsTr("Fix x-axis from "); checked: false;	childrenOnSameRow: true
+				 		DoubleField  { name: "fixAxisLower";	label: qsTr(""); negativeValues: true	
+				 		defaultValue: -2; afterLabel: qsTr(" to ")}
+		 				DoubleField  { name: "fixAxisUpper";	label: qsTr(""); negativeValues: true
+		 				defaultValue: 2	}
+			}
 		}
 		CheckBox
 		{
