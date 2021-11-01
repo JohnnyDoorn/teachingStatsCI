@@ -32,7 +32,7 @@ Form
 		DoubleField { name: "sigma";	label: qsTr("σ");	negativeValues: false;	max: 100;	defaultValue: 1	}
 		IntegerField { name: "n";	label: qsTr("n");	min: 2;	max: 10000; defaultValue: 10				}
 		CIField { name: "confidenceIntervalInterval"; label: qsTr("Confidence level") }
-		IntegerField { name: "nReps";	label: qsTr("Repetitions");	min: 1;	max: 10000;	defaultValue: 10				}
+		IntegerField { name: "nReps";	label: qsTr("Repetitions");	min: 1;	max: 10000;	defaultValue: 10; 	id:nReps				}
     }
 
     Divider { }
@@ -59,7 +59,8 @@ Form
 		CheckBox
 		{
 			name: "dataPlot";	label: qsTr("Data plots")
-			IntegerField { name: "dataPlotShowN";	label: qsTr("Show last");	min: 1;	max: 10;	defaultValue: 1				}
+			Slider { name: "dataPlotShowN";	label: qsTr("Show last");	min: 1;	max: nReps.value;	value: 3; decimals: 0				}
+						
 		}
 	}
 
