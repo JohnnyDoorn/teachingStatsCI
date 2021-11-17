@@ -31,6 +31,8 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
   
   .plotDatasets(confidenceContainer, options)
   
+  .plotConvergencePlot(confidenceContainer, options)
+  
   return()
 }
 
@@ -115,7 +117,7 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
     return()
   
   treeTable <- createJaspTable(title = "Confidence Interval Table")
-  jaspContainer[["treeTable"]] <- treeTable
+  jaspContainer[["containerTreePlot"]][["treeTable"]] <- treeTable
   
   treeTable$addColumnInfo(name = "Repetition", type = "integer")
   treeTable$addColumnInfo(name = "mean", type = "number", title=gettext("Mean"))
@@ -144,7 +146,9 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
   jaspContainer[["containerTreePlot"]] <- treePlotContainer
   treePlotContainer$dependOn(c("treePlot", "treePlotAdditionalInfo", "fixAxisTreePlot",
                                "fixAxisLower", "fixAxisUpper", "dataPlotShowN"))
-  treePlotContainer[["treePlot"]] <- createJaspPlot(title = "", width = 480, height = 320) 
+  treePlotContainer[["treePlot"]] <- createJaspPlot(title = "", width = 480, 
+                                                    height = 320 * min((options$nReps %/% 50 + 1), 5))
+  
   
   if (options$fixAxisLower >= options$fixAxisUpper) {
     treePlotContainer$setError(gettext("Make sure to specify a lower bound that is lower than the upper bound for the x-axis."))
@@ -153,8 +157,11 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
   
   meanCI <- jaspContainer[["computedConfidenceIntervals"]][["object"]]
   meanCI$Repetition <- rev(meanCI$Repetition)
-  
   meanCItrimmed <- meanCI[1:options$dataPlotShowN, ]
+  
+  myTicks <- jaspGraphs::getPrettyAxisBreaks(1:options$nReps)
+  myTicks[1] <- 1
+
   p <- ggplot2::ggplot(meanCItrimmed,      
                        ggplot2::aes(x = mean,
                                     y = Repetition)) +
@@ -168,9 +175,9 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
                         linetype = "dashed") +
     ggplot2::scale_y_continuous(limits = c(0, options$nReps+1), 
                                 breaks = jaspGraphs::getPrettyAxisBreaks(1:options$nReps),
-                                labels = rev(jaspGraphs::getPrettyAxisBreaks(1:options$nReps)+ 1)) +
+                                labels = rev(myTicks)) +
     ggplot2::xlab(gettextf("Observed mean and %s%% CI", options$confidenceIntervalInterval * 100)) 
-  
+
   if (options$fixAxisTreePlot) {
     p <- p + ggplot2::scale_x_continuous(limits = c(options$fixAxisLower, options$fixAxisUpper))
   }
@@ -198,7 +205,7 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
                                                                     dependencies = c("dataPlotShowN", "dataPlot"))
   
   rainData <- jaspContainer[["simulatedDatasets"]][["object"]]
-
+  
   nRows <- min((options$dataPlotShowN %/% 3) + 1, 3)
   nCols <- ifelse(nRows == 1, options$dataPlotShowN, 3)
   addDots <- ifelse(options$dataPlotShowN > 9, TRUE, FALSE)
@@ -242,6 +249,49 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
   p <- jaspGraphs::ggMatrixPlot(matrix(plotList, nrow = nRows, ncol = nCols, byrow = TRUE))
   matrixPlot$plotObject <- p
   jaspContainer[["containerRainCloudPlots"]][["plotObject"]] <- matrixPlot
+  
+  return()
+}
+
+.plotConvergencePlot <- function(jaspContainer, options) {
+  if (!is.null(jaspContainer[["containerConvergencePlot"]]) || !options$convergencePlot)
+    return()
+  
+  containerConvergencePlot <- createJaspContainer(title = gettext("Convergence Plot"))
+  jaspContainer[["containerConvergencePlot"]] <- containerConvergencePlot
+  containerConvergencePlot$dependOn(c("convergencePlot", "convergenceZoomIn", "convergenceZoomMargin"))
+  containerConvergencePlot[["convergencePlot"]] <- createJaspPlot(title = "", width = 480, height = 320) 
+  
+  meanCI <- jaspContainer[["computedConfidenceIntervals"]][["object"]]
+  
+  myTicks <- jaspGraphs::getPrettyAxisBreaks(1:options$nReps)
+  myTicks[1] <- 1
+
+  if (options$convergenceZoomIn) {
+    myYlim <- c(max(0, options$confidenceIntervalInterval - options$convergenceZoomMargin),
+                min(1, options$confidenceIntervalInterval + options$convergenceZoomMargin))  
+  } else {
+    myYlim <- c(0, 1)
+  }
+  
+  p <- ggplot2::ggplot(data= NULL) +
+    ggplot2::xlab("Number of Replications") +
+    ggplot2::ylab("p(Coverage)") +
+    ggplot2::coord_cartesian(xlim = c(0, options$nReps), ylim = myYlim) + 
+    ggplot2::geom_line(color = "darkred", ggplot2::aes(x = 1:options$nReps, 
+                                                       y = rep(options$confidenceIntervalInterval, options$nReps))) +  # confidence level
+    ggplot2::geom_line(data= NULL, ggplot2::aes(x = 1:options$nReps, 
+                                                y = cumsum(meanCI$successfulCI)/1:options$nReps)) + # observed coverage
+    ggplot2::scale_x_continuous(breaks = jaspGraphs::getPrettyAxisBreaks(1:options$nReps), labels = myTicks)
+
+  p <- p +
+    jaspGraphs::geom_rangeframe() + # add lines on the x-axis and y-axis
+    jaspGraphs::themeJaspRaw()      # add the JASP theme
+  
+  if(isTryError(p))
+    containerConvergencePlot[["convergencePlot"]]$setError(.extractErrorMessage(p))
+  else
+    containerConvergencePlot[["convergencePlot"]]$plotObject <- p
   
   return()
 }

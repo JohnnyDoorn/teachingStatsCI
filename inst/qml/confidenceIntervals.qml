@@ -28,12 +28,106 @@ Form
 
 	Group
 	{
-		DoubleField  { name: "mu";	label: qsTr("μ"); negativeValues: true	}
-		DoubleField { name: "sigma";	label: qsTr("σ");	negativeValues: false;	max: 100;	defaultValue: 1	}
-		IntegerField { name: "n";	label: qsTr("n");	min: 2;	max: 10000; defaultValue: 10				}
-		CIField { name: "confidenceIntervalInterval"; label: qsTr("Confidence level") }
-		IntegerField { name: "nReps";	label: qsTr("Repetitions");	min: 1;	max: 10000;	defaultValue: 10; 	id:nReps				}
+		DoubleField
+		{
+			name: "mu"
+			label: qsTr("μ")
+			negativeValues: true
+		}
+		DoubleField
+		{
+			name: "sigma"
+			label: qsTr("σ")
+			negativeValues: false
+			max: 100
+			defaultValue: 1
+		}
+		IntegerField
+		{
+			name: "n"
+			label: qsTr("n")
+			min: 2
+			max: 10000
+			defaultValue: 10
+		}
+		CIField
+		{
+			name: "confidenceIntervalInterval"
+			label: qsTr("Confidence level")
+		}
+		IntegerField
+		{
+			name: "nReps"
+			label: qsTr("Repetitions")
+			min: 1
+			max: 10000
+			defaultValue: 100
+			id:nReps
+		}
     }
+
+	Group
+	{
+		Slider
+		{
+			name: "dataPlotShowN"
+			label: qsTr("Show last")
+			min: 1
+			max: nReps.value
+			value: 3
+			decimals: 0
+			vertical: false
+			id: dataSlider
+		}
+		Group
+		{
+			Button
+			{
+				id: 								decreaseSample
+				text:								qsTr("<b>- 1</b>")
+				onClicked: {
+					dataSlider.value += 1
+					dataSlider.control.moved()
+				}
+			}
+			Button
+			{
+				id: 								increaseSample
+				anchors
+				{
+					left:							decreaseSample.right
+					top:							decreaseSample.top
+					leftMargin:						jaspTheme.generalAnchorMargin
+				}
+				text:								qsTr("<b>+ 1</b>")
+				onClicked:							dataSlider.value += 1
+			}
+			Button
+			{
+				id: 								decreaseSampleTen
+				anchors
+				{
+					right:							decreaseSample.right
+					top:							decreaseSample.bottom
+					topMargin:						jaspTheme.generalAnchorMargin
+				}
+				text:								qsTr("<b>- 10</b>")
+				onClicked:							dataSlider.value -= 10
+			}
+			Button
+			{
+				id: 								increaseSampleTen
+				anchors
+				{
+					left:							decreaseSampleTen.right
+					top:							decreaseSampleTen.top
+					leftMargin:						jaspTheme.generalAnchorMargin
+				}
+				text:								qsTr("<b>+ 10</b>")
+				onClicked:							dataSlider.value += 10
+			}
+		}
+	}
 
     Divider { }
 
@@ -42,27 +136,64 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "treePlot";		label: qsTr("Tree plot"); checked: true
+			name: "treePlot"
+			label: qsTr("Tree plot")
+			checked: true
 			CheckBox
 			{
-				name: "tableTreePlot"; label: qsTr("Display table"); checked: false
+				name: "tableTreePlot"
+				label: qsTr("Display table")
+				checked: false
 			}
 			CheckBox 
 			{ 
-				name: "fixAxisTreePlot"; label: qsTr("Fix x-axis from "); checked: false;	childrenOnSameRow: true
-				 		DoubleField  { name: "fixAxisLower";	label: qsTr(""); negativeValues: true	
-				 		defaultValue: -2; afterLabel: qsTr(" to ")}
-		 				DoubleField  { name: "fixAxisUpper";	label: qsTr(""); negativeValues: true
-		 				defaultValue: 2	}
+				name: "fixAxisTreePlot"
+				label: qsTr("Fix x-axis from ")
+				checked: false
+				childrenOnSameRow: true
+				DoubleField
+				{
+					name: "fixAxisLower"
+					label: qsTr("")
+					negativeValues: true
+					defaultValue: -2
+					afterLabel: qsTr(" to ")
+				}
+				DoubleField
+				{
+					name: "fixAxisUpper";
+					label: qsTr("")
+					negativeValues: true
+					defaultValue: 2
+				}
 			}
 		}
 		CheckBox
 		{
-			name: "dataPlot";	label: qsTr("Data plots")
-			Slider { name: "dataPlotShowN";	label: qsTr("Show last");	min: 1;	max: nReps.value;	value: 3; decimals: 0				}
+			name:	"dataPlot"
+			label:	qsTr("Data distribution plots")
+		}
+		CheckBox
+		{
+			name: "convergencePlot"
+			label: qsTr("Convergence plot")
+			CheckBox
+			{
+				name: "convergenceZoomIn"
+				label: qsTr("Zoom in with margin")
+				childrenOnSameRow: true
+				DoubleField
+				{
+					name: "convergenceZoomMargin"
+					label: qsTr("")
+					negativeValues: false
+					defaultValue: 0.2
+					min: 0.01
+					max: 0.4
+				}
+			}
 						
 		}
 	}
-
 }
 
