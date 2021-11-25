@@ -84,7 +84,6 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-
 .makeSummaryTable <- function(jaspContainer, options) {
   if (!is.null(jaspContainer[["resultTable"]]))
     return()
@@ -274,15 +273,27 @@ ConfidenceIntervals <- function(jaspResults, dataset = NULL, options) {
     myYlim <- c(0, 1)
   }
   
+  cumSuccessProportion <- cumsum(meanCI$successfulCI)/1:options$nReps
+  simulMatrix <- matrix(0, nrow = 1000, ncol = options$nReps)
+  
+  for (i in 1:options$nReps){
+    simulMatrix[ , i] <- rbeta(1e3, cumSuccessProportion[i]*i+1, i-cumSuccessProportion[i]*i+1)
+  }
+  credInt <- apply(simulMatrix, 2, HDInterval::hdi) # record the credibility interval
+  y.upper <- credInt[1,]
+  y.lower <- credInt[2,]
+
   p <- ggplot2::ggplot(data= NULL) +
     ggplot2::xlab("Number of Replications") +
     ggplot2::ylab("p(Coverage)") +
     ggplot2::coord_cartesian(xlim = c(0, options$nReps), ylim = myYlim) + 
+    ggplot2::geom_polygon(ggplot2::aes(x = c(1:options$nReps,options$nReps:1), y = c(y.upper, rev(y.lower))),
+                          fill = "lightsteelblue") +  # CI
     ggplot2::geom_line(color = "darkred", ggplot2::aes(x = 1:options$nReps, 
                                                        y = rep(options$confidenceIntervalInterval, options$nReps))) +  # confidence level
     ggplot2::geom_line(data= NULL, ggplot2::aes(x = 1:options$nReps, 
                                                 y = cumsum(meanCI$successfulCI)/1:options$nReps)) + # observed coverage
-    ggplot2::scale_x_continuous(breaks = jaspGraphs::getPrettyAxisBreaks(1:options$nReps), labels = myTicks)
+    ggplot2::scale_x_continuous(breaks = jaspGraphs::getPrettyAxisBreaks(1:options$nReps), labels = myTicks) 
 
   p <- p +
     jaspGraphs::geom_rangeframe() + # add lines on the x-axis and y-axis

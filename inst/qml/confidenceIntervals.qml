@@ -23,9 +23,8 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 
-Form 
+Form
 {
-
 	Group
 	{
 		DoubleField
@@ -64,8 +63,7 @@ Form
 			defaultValue: 100
 			id:nReps
 		}
-    }
-
+	}
 	Group
 	{
 		Slider
@@ -78,61 +76,48 @@ Form
 			decimals: 0
 			vertical: false
 			id: dataSlider
+			Layout.leftMargin: (increaseSampleTen.x + increaseSampleTen.width) /2  - textField.width
+			onValueChanged: moved()
 		}
-		Group
+
+		RowLayout
 		{
-			Button
-			{
-				id: 								decreaseSample
-				text:								qsTr("<b>- 1</b>")
-				onClicked: {
-					dataSlider.value += 1
-					dataSlider.control.moved()
-				}
-			}
-			Button
-			{
-				id: 								increaseSample
-				anchors
-				{
-					left:							decreaseSample.right
-					top:							decreaseSample.top
-					leftMargin:						jaspTheme.generalAnchorMargin
-				}
-				text:								qsTr("<b>+ 1</b>")
-				onClicked:							dataSlider.value += 1
-			}
+			Layout.topMargin: 10 * preferencesModel.uiScale
+			spacing: jaspTheme.generalAnchorMargin
 			Button
 			{
 				id: 								decreaseSampleTen
-				anchors
-				{
-					right:							decreaseSample.right
-					top:							decreaseSample.bottom
-					topMargin:						jaspTheme.generalAnchorMargin
-				}
 				text:								qsTr("<b>- 10</b>")
 				onClicked:							dataSlider.value -= 10
 			}
 			Button
 			{
+				id: 								decreaseSample
+				text:								qsTr("<b>- 1</b>")
+				onClicked:							dataSlider.value += 1
+			}
+			Button
+			{
+				Layout.leftMargin:					10 * preferencesModel.uiScale
+				id: 								increaseSample
+				text:								qsTr("<b>+ 1</b>")
+				onClicked:							dataSlider.value += 1
+			}
+
+			Button
+			{
 				id: 								increaseSampleTen
-				anchors
-				{
-					left:							decreaseSampleTen.right
-					top:							decreaseSampleTen.top
-					leftMargin:						jaspTheme.generalAnchorMargin
-				}
 				text:								qsTr("<b>+ 10</b>")
 				onClicked:							dataSlider.value += 10
 			}
 		}
 	}
 
-    Divider { }
+	Divider{}
 
 	Group
 	{
+		Layout.columnSpan:2
 		title: qsTr("Plots")
 		CheckBox
 		{
@@ -145,8 +130,8 @@ Form
 				label: qsTr("Display table")
 				checked: false
 			}
-			CheckBox 
-			{ 
+			CheckBox
+			{
 				name: "fixAxisTreePlot"
 				label: qsTr("Fix x-axis from ")
 				checked: false
@@ -192,7 +177,7 @@ Form
 					max: 0.4
 				}
 			}
-						
+
 		}
 	}
 }
