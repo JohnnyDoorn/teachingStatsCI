@@ -44,7 +44,7 @@ Form
 		IntegerField
 		{
 			name: "n"
-			label: qsTr("n")
+			label: qsTr("Sample size (n)")
 			min: 2
 			max: 10000
 			defaultValue: 10
@@ -74,9 +74,9 @@ Form
 			max: nReps.value
 			value: 3
 			decimals: 0
-			vertical: false
+			vertical: true
 			id: dataSlider
-			Layout.leftMargin: (increaseSampleTen.x + increaseSampleTen.width) /2  - textField.width
+			Layout.leftMargin: (increaseSampleTen.x + increaseSampleTen.width) / 1.9  - textField.width
 			onValueChanged: moved()
 		}
 
@@ -94,11 +94,11 @@ Form
 			{
 				id: 								decreaseSample
 				text:								qsTr("<b>- 1</b>")
-				onClicked:							dataSlider.value += 1
+				onClicked:							dataSlider.value -= 1
 			}
 			Button
 			{
-				Layout.leftMargin:					10 * preferencesModel.uiScale
+				Layout.leftMargin:						preferencesModel.uiScale
 				id: 								increaseSample
 				text:								qsTr("<b>+ 1</b>")
 				onClicked:							dataSlider.value += 1
